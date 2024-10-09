@@ -1,8 +1,8 @@
-=== POKY - Product Importer ===
+﻿=== POKY - Product Importer ===
 Contributors: poky
 Tags: shopify, woocommerce, amazon, ebay, etsy, walmart, shopify importer, poky
 Requires at least: 2.9.1
-Tested up to: 6.5.4
+Tested up to: 6.6.2
 Requires PHP: 5.0
 Stable tag: trunk
 License: GPLv2

@@ -4,13 +4,13 @@
  * Plugin Name: POKY - Product Importer
  * Plugin URI: https://poky.app
  * Description: Use POKY Plugin to import products from multi Platforms to your store with one Click.
- * Version: 2.1.0
+ * Version: 2.2.0
  * Author: POKY
  * Author URI: https://poky.app
  * Requires at least: 4.4
- * Tested up to: 6.5.4
+ * Tested up to: 6.6.2
  * WC requires at least: 2.2
- * WC tested up to: 8.3.1
+ * WC tested up to: 9.3.3
  * @package Poky
  * @category Products
  * @author Poky

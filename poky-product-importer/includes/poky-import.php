@@ -22,31 +22,42 @@ class PokyImport
 		$product->set_catalog_visibility( 'visible' );
 		$product->set_description( $product_data['description'] );
 
-		if( $product_data['type'] == 'simple' ) {
-			$product->set_sku($product_data['sku']);
-			$product->set_price($product_data['price']);
-			$product->set_regular_price($product_data['regular_price']);
-			$product->set_manage_stock(false);
-			$product->set_stock_quantity($product_data['qty']);
-		}
-
 		$product->set_backorders('no');
-		$product->set_stock_status($product_data['instock']);
-		$product->set_reviews_allowed(true);
-		$product->set_sold_individually(false);
+        $product->set_stock_status($product_data['instock']);
+        $product->set_reviews_allowed(true);
+        $product->set_sold_individually(false);
 
-		if( !empty( $product_data['image'] ) ) {
-			$image = $this->upload_media( $product_data['image'] );
+        if( !empty( $product_data['image'] ) ) {
+        	$image = $this->upload_media( $product_data['image'] );
 
-			$imgIds=array();
+        	$imgIds=array();
 
-			for ($i=1; $i<count($product_data['images']); $i++) {
+        	for ($i=1; $i<count($product_data['images']); $i++) {
                 $imgIds[]=$this->upload_media($product_data['images'][$i]);
             }
 
-			$product->set_image_id( $image );
+            $product->set_image_id( $image );
             $product->set_gallery_image_ids( $imgIds );
-		}
+        }
+
+		if($product_data['type'] == 'simple') {
+            //$product->set_sku($product_data['sku']);
+
+            if (!empty($product_data['regular_price'])) {
+                $product->set_regular_price($product_data['regular_price']);
+            } else {
+                $product->set_regular_price($product_data['price']);
+            }
+
+            if (!empty($product_data['regular_price']) && !empty($product_data['price'])) {
+                $product->set_sale_price($product_data['price']);
+            }
+
+            $product->set_manage_stock(false);
+            $product->set_stock_quantity($product_data['qty']);
+
+            $product_id = $product->save();
+        }
 
 		if( $product_data['type'] == 'variable' ) {
 			$att_array = array();
@@ -96,7 +107,7 @@ class PokyImport
 						'post_type' => 'product_variation',
 						'guid' => $product->get_permalink()
 					);
-					// Creating the product variation
+
 					$variation_id = wp_insert_post( $variation_post );
 				}
 
@@ -119,13 +130,10 @@ class PokyImport
 					$var_attrs[$slug]	= $variant_attr['options'];
 					$term_slug = get_term_by('name', $variant_attr['options'], $variant_attr['name'])->slug;
 
-					// Get the post Terms names from the parent variable product.
 					$post_term_names = (array) wp_get_post_terms($product_id, "pa_" . $slug, array('fields' => 'names'));
-					// Check if the post term exist and if not we set it in the parent variable product.
 					if (!in_array($variant_attr['options'], $post_term_names))
 						wp_set_post_terms($product_id, $variant_attr['options'], $variant_attr['name'], true);
 
-					// Set/save the attribute data in the product variation
 					update_post_meta($variation_id, 'attribute_' . $slug, $term_slug);
 				}
 
@@ -137,12 +145,13 @@ class PokyImport
 		return $product_id;
 	}
 
-	private function upload_media( $image_url ){
+	private function upload_media($image_url){
 		require_once(ABSPATH . 'wp-admin/includes/image.php');
 		require_once(ABSPATH . 'wp-admin/includes/file.php');
 		require_once(ABSPATH . 'wp-admin/includes/media.php');
 		$media = media_sideload_image( $image_url, 0, null, 'id' );
 		return $media;
 	}
-
 }
+
+// N E X T - A F L A
